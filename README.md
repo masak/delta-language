@@ -13,15 +13,15 @@ Statements:
 ```
 c = a ** 2 + b ** 2;                          Expression statement
 
-if <expr> { <stmts> }
-    ... else if <expr> { <stmts> }
-    ... else { <stmts> }                      If statement
+if <expr> { <stmt>... }
+    ... else if <expr> { <stmt>... }
+    ... else { <stmt>... }                    If statement
 
-while <expr> { <stmts> }                      While loop
+while <expr> { <stmt>... }                    While loop
 
-loop { <lclauses> }                           General-purpose loop (described in detail later)
+loop { <lclause>... }                         General-purpose loop (described in detail later)
 
-func <identifier> (<param>...) { <stmts> }    Function declaration
+func <identifier> (<param>...) { <stmt>... }  Function declaration
 ```
 
 Expressions:
