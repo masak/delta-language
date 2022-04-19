@@ -22,6 +22,10 @@ while <expr> { <stmt>... }                    While loop
 loop { <lclause>... }                         General-purpose loop (described in detail later)
 
 func <identifier> (<param>...) { <stmt>... }  Function declaration
+
+label <identifier>;                           Jump target
+
+goto <identifier>;                            Jump statement
 ```
 
 Expressions:
