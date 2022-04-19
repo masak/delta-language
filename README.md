@@ -67,6 +67,7 @@ f(<arg>...)                                   Function call
 ## The `if` and `while` macros
 
 These three end up being mutually recursive, although in a way that bottoms out on the syntax.
+You can also spot from these definitions that `if` is all about conditionally jumping forwards, whereas `while` is all about jumping backwards.
 
 ```
 mac if(condBlockPairs: Array<(() => Bool, () => ())>, elseBlock?: () => ()) {
