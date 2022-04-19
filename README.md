@@ -19,6 +19,8 @@ if <expr> { <stmt>... }
 
 while <expr> { <stmt>... }                    While loop
 
+for <decl> in <expr> { <stmt>... }
+
 loop { <lclause>... }                         General-purpose loop (described in detail later)
 
 func <identifier> (<paramlist>) { <stmt>... } Function declaration
@@ -56,63 +58,47 @@ b1 && b2                                      Boolean operators
 b ?? <e1> !! <e2>                             ...including Raku's ternary
 
 let x = <expr>                                Variable declaration (a term, like in Alma and Raku)
+x = <expr>                                    Assignment
+x += <expr>                                   Assignment metaoperators
 
 f(<arg>...)                                   Function call
 ```
 
 ## The `if` and `while` macros
 
+These three end up being mutually recursive, although in a way that bottoms out on the syntax.
+
 ```
-mac if(
-    cond: () => Bool,
-    thenBlock: () => (),
-    elseIfs: Array<(() => Bool, () => ())>,
-    elseBlock?: () => ()
-) {
+mac if(condBlockPairs: Array<(() => Bool, () => ())>, elseBlock?: () => ()) {
+    for let (cond, block) in condBlockPairs {
+        let b = cond();
+        jumptable b (
+            true => matched,
+            false => nextIter,
+        );
+label matched:
+        block();
+        return;
+        
+label nextIter:
+    }
+
+    elseBlock?();
+}
+
+mac while(cond: () => Bool, body: () => ()) {
 label iterate:
-    let c = cond();
-    jumptable c (
-        true => trueLabel,
-        false => elseIfsLabel,
-    );
-
-label trueLabel:
-    thenBlock();
-    jump done;
-
-label elseIfsLabel:
-    if elseIfs.size() == 0 {    # the macro recursion here is well-founded
-        (cond, thenBlock) = elseIfs.shift()
+    if cond() {
+        body();
         jump iterate;
     }
-    fallthrough;
-
-label falseLabel;
-    if elseBlock !== undefined {
-        elseBlock();
-    }
-    jump done;
-
-label done;
 }
-```
 
-```
-mac while(
-    cond: () => Bool,
-    body: () => (),
-) {
-label iterate:
-    let c = cond();
-    jumptable c (
-        true => doBody,
-        false => done,
-    );
-
-label doBody:
-    body();
-    jump iterate;
-
-label done;
+mac for<T>(array: Array<T>, body: (e: T) => ()) {
+    let i = 0;
+    while i < array.size() {
+        let element = array[i];
+        body(element);
+    }
 }
 ```
