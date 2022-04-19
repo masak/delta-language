@@ -35,9 +35,9 @@ Expressions:
 ```
 -5                                            Int
 "OH HAI"                                      Str
-(42, "OH NOES")                               (Int, Str) Tuple
-func (<paramlist>) { <stmt>... }              (...) => ... Func
-mac (<paramlist>) { <stmt>... }               (...) => ... Mac
+(42, "OH NOES")                               (Int, Str)      Tuple
+func (<paramlist>) { <stmt>... }              (...) => ...    Func
+mac (<paramlist>) { <stmt>... }               (...) => ...    Mac
 
 a + b                                         Unary and binary arithmetic
                                               (Imagine a complete set here)
