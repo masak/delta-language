@@ -21,7 +21,9 @@ while <expr> { <stmt>... }                    While loop
 
 loop { <lclause>... }                         General-purpose loop (described in detail later)
 
-func <identifier> (<param>...) { <stmt>... }  Function declaration
+func <identifier> (<paramlist>) { <stmt>... } Function declaration
+
+mac <identifier> (<paramlist>) { <stmt>... }  Macro declaration
 
 label <identifier>;                           Jump target
 
@@ -31,6 +33,12 @@ goto <identifier>;                            Jump statement
 Expressions:
 
 ```
+-5                                            Int
+"OH HAI"                                      Str
+(42, "OH NOES")                               (Int, Str) Tuple
+func (<paramlist>) { <stmt>... }              (...) => ... Func
+mac (<paramlist>) { <stmt>... }               (...) => ... Mac
+
 a + b                                         Unary and binary arithmetic
                                               (Imagine a complete set here)
 
