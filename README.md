@@ -19,6 +19,8 @@ if <expr> { <stmts> }
 
 while <expr> { <stmts> }                      While loop
 
+loop { <lclauses> }                           General-purpose loop (described in detail later)
+
 func <identifier> (<param>...) { <stmts> }    Function declaration
 ```
 
