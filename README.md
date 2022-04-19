@@ -25,11 +25,15 @@ func <identifier> (<paramlist>) { <stmt>... } Function declaration
 
 mac <identifier> (<paramlist>) { <stmt>... }  Macro declaration
 
+return <expr>;                                Return statement (expr optional if empty tuple)
+
 enum <identifier> (<member>...)               Enum declaration
 
-label <identifier>;                           Jump target
+label <identifier>:                           Jump target
 
-goto <identifier>;                            Jump statement
+jump <identifier>;                            Jump statement
+jumptable <expr> (<jclause>...);              Jump table
+fallthrough;                                  No-op -- allowed before a label for clarity
 ```
 
 Expressions:
@@ -39,11 +43,14 @@ Expressions:
 "OH HAI"                                      Str
 false                                         Bool
 (42, "OH NOES", true)                         (Int, Str, Bool)      Tuple
+[1, 2, 3]                                     Array<Int>            Array
 func (<paramlist>) { <stmt>... }              (...) => ...          Func
 mac (<paramlist>) { <stmt>... }               (...) => ...          Mac
 
 a + b                                         Unary and binary arithmetic
                                               (Imagine a complete set here)
+
+x == y                                        Equality, comparison
 
 b1 && b2                                      Boolean operators
 b ?? <e1> !! <e2>                             ...including Raku's ternary
@@ -51,4 +58,61 @@ b ?? <e1> !! <e2>                             ...including Raku's ternary
 let x = <expr>                                Variable declaration (a term, like in Alma and Raku)
 
 f(<arg>...)                                   Function call
+```
+
+## The `if` and `while` macros
+
+```
+mac if(
+    cond: () => Bool,
+    thenBlock: () => (),
+    elseIfs: Array<(() => Bool, () => ())>,
+    elseBlock?: () => ()
+) {
+label iterate:
+    let c = cond();
+    jumptable c (
+        true => trueLabel,
+        false => elseIfsLabel,
+    );
+
+label trueLabel:
+    thenBlock();
+    jump done;
+
+label elseIfsLabel:
+    if elseIfs.size() == 0 {    # the macro recursion here is well-founded
+        (cond, thenBlock) = elseIfs.shift()
+        jump iterate;
+    }
+    fallthrough;
+
+label falseLabel;
+    if elseBlock !== undefined {
+        elseBlock();
+    }
+    jump done;
+
+label done;
+}
+```
+
+```
+mac while(
+    cond: () => Bool,
+    body: () => (),
+) {
+label iterate:
+    let c = cond();
+    jumptable c (
+        true => doBody,
+        false => done,
+    );
+
+label doBody:
+    body();
+    jump iterate;
+
+label done;
+}
 ```
