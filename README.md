@@ -14,8 +14,8 @@ Statements:
 c = a ** 2 + b ** 2;                          Expression statement
 
 if <expr> { <stmt>... }
-    ... else if <expr> { <stmt>... }
-    ... else { <stmt>... }                    If statement
+    ... else if <expr> { <stmt>... }          If statement
+    ... else { <stmt>... }
 
 while <expr> { <stmt>... }                    While loop
 
@@ -24,6 +24,8 @@ loop { <lclause>... }                         General-purpose loop (described in
 func <identifier> (<paramlist>) { <stmt>... } Function declaration
 
 mac <identifier> (<paramlist>) { <stmt>... }  Macro declaration
+
+enum <identifier> (<member>...)               Enum declaration
 
 label <identifier>;                           Jump target
 
@@ -35,9 +37,10 @@ Expressions:
 ```
 -5                                            Int
 "OH HAI"                                      Str
-(42, "OH NOES")                               (Int, Str)      Tuple
-func (<paramlist>) { <stmt>... }              (...) => ...    Func
-mac (<paramlist>) { <stmt>... }               (...) => ...    Mac
+false                                         Bool
+(42, "OH NOES", true)                         (Int, Str, Bool)      Tuple
+func (<paramlist>) { <stmt>... }              (...) => ...          Func
+mac (<paramlist>) { <stmt>... }               (...) => ...          Mac
 
 a + b                                         Unary and binary arithmetic
                                               (Imagine a complete set here)
