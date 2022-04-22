@@ -19,7 +19,7 @@ if <expr> { <stmt>... }
 
 while <expr> { <stmt>... }                    While loop
 
-for <decl> in <expr> { <stmt>... }
+for <expr> -> <var> { <stmt>... }             For loop
 
 loop { <lclause>... }                         General-purpose loop (described in detail later)
 
@@ -45,7 +45,6 @@ false                                         Bool
 (42, "OH NOES", true)                         (Int, Str, Bool)      Tuple
 [1, 2, 3]                                     Array<Int>            Array
 func (<paramlist>) { <stmt>... }              (...) => ...          Func
-mac (<paramlist>) { <stmt>... }               (...) => ...          Mac
 
 a + b                                         Unary and binary arithmetic
                                               (Imagine a complete set here)
@@ -71,6 +70,7 @@ You can also spot from these definitions that `if` is all about conditionally ju
 func if(
     @parse(/ "if" <expr> <block> ["else" "if" <expr> <block>]* /)
     condBlockPairs: Array<(() => Bool, () => ())>,
+
     @parse(/ "else" <block>/)
     elseBlock?: () => (),
 ) {
@@ -93,6 +93,7 @@ label nextIter:
 func while(
     @parse(/ "while" <expr> /)
     cond: () => Bool,
+
     @parse(/ <block> /)
     body: () => (),
 ) {
@@ -106,7 +107,8 @@ label iterate:
 func for<T>(
     @parse(/ "for" <expr> /)
     array: Array<T>,
-    @parse(/ <pblock> /)
+
+    @parse(/ "->" <var> <block> /)
     body: (e: T) => (),
 ) {
     let i = 0;
