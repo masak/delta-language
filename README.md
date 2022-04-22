@@ -25,8 +25,6 @@ loop { <lclause>... }                         General-purpose loop (described in
 
 func <identifier> (<paramlist>) { <stmt>... } Function declaration
 
-mac <identifier> (<paramlist>) { <stmt>... }  Macro declaration
-
 return <expr>;                                Return statement (expr optional if empty tuple)
 
 enum <identifier> (<member>...)               Enum declaration
@@ -64,13 +62,18 @@ x += <expr>                                   Assignment metaoperators
 f(<arg>...)                                   Function call
 ```
 
-## The `if` and `while` macros
+## The `if`, `for`, and `while` functions
 
 These three end up being mutually recursive, although in a way that bottoms out on the syntax.
 You can also spot from these definitions that `if` is all about conditionally jumping forwards, whereas `while` is all about jumping backwards.
 
 ```
-mac if(condBlockPairs: Array<(() => Bool, () => ())>, elseBlock?: () => ()) {
+func if(
+    @parse(/ "if" <expr> <block> ["else" "if" <expr> <block>]* /)
+    condBlockPairs: Array<(() => Bool, () => ())>,
+    @parse(/ "else" <block>/)
+    elseBlock?: () => (),
+) {
     for let (cond, block) in condBlockPairs {
         let b = cond();
         jumptable b (
@@ -87,7 +90,12 @@ label nextIter:
     elseBlock?();
 }
 
-mac while(cond: () => Bool, body: () => ()) {
+func while(
+    @parse(/ "while" <expr> /)
+    cond: () => Bool,
+    @parse(/ <block> /)
+    body: () => (),
+) {
 label iterate:
     if cond() {
         body();
@@ -95,7 +103,12 @@ label iterate:
     }
 }
 
-mac for<T>(array: Array<T>, body: (e: T) => ()) {
+func for<T>(
+    @parse(/ "for" <expr> /)
+    array: Array<T>,
+    @parse(/ <pblock> /)
+    body: (e: T) => (),
+) {
     let i = 0;
     while i < array.size() {
         let element = array[i];
