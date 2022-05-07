@@ -6,6 +6,34 @@ The language distinguishes itself by fully exposing the CFG construction process
 Built-in control-flow keywords (such as `if` and `while`) are actually macros from the core library, providing an example of this participatory process.
 The general-purpose `loop` (also a macro) provides a rich toolkit for building custom loops.
 
+## Worked example: binary search
+
+tbd: Show how to build this one as a CFG of suites.
+
+```
+enum NotFound (NOT_FOUND)
+
+func search(array: Array<Int>, target: Int): Int | NotFound {
+    let low = 0;
+    let high = array.length;
+
+    while (low < high) {
+        let mid = (low + high) // 2;
+
+        if (array[mid] >= target) {
+            high = mid;
+        }
+        else {
+            low = mid + 1;
+        }
+    }
+
+    return array.length > 0 && array[low] === target
+        ? low
+        : NOT_FOUND;
+}
+```
+
 ## Language syntax
 
 Statements:
