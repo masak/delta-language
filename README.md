@@ -47,6 +47,8 @@ if <expr> { <stmt>... }
 
 while <expr> { <stmt>... }                    While loop
 
+repeat { <stmt>... } while <expr>;            Repeat-while loop (called "do-while" in C)
+
 for <expr> -> <var> { <stmt>... }             For loop
 
 loop { <lclause>... }                         General-purpose loop (described in detail later)
@@ -89,18 +91,18 @@ x += <expr>                                   Assignment metaoperators
 f(<arg>...)                                   Function call
 ```
 
-## The `if`, `for`, and `while` functions
+## The `if`, `for`, `repeatWhile` and `while` functions
 
-These three end up being mutually recursive, although in a way that bottoms out on the syntax.
-You can also spot from these definitions that `if` is all about conditionally jumping forwards, whereas `while` is all about jumping backwards.
+These four end up being mutually recursive, although in a way that bottoms out on the syntax.
+You can also spot from these definitions that `if` is all about conditionally jumping forwards, whereas `repeatWhile` is all about jumping backwards.
 
 ```
 func if(
     @parse(/ "if" <expr> <block> ["else" "if" <expr> <block>]* /)
     condBlockPairs: Array<(() => Bool, () => ())>,
 
-    @parse(/ "else" <block>/)
-    elseBlock?: () => (),
+    @parse(/ ["else" <block>]? /)
+    elseBlock = parseDefault(quote { else {} }),
 ) {
     for let (cond, block) in condBlockPairs {
         let b = cond();
@@ -115,7 +117,21 @@ label matched:
 label nextIter:
     }
 
-    elseBlock?();
+    elseBlock();
+}
+
+func repeatWhile(
+    @parse(/ "repeat" <block> /),
+    body: () => (),
+
+    @parse(/ "while" <expr> ";" /),
+    cond: () => Bool,
+) {
+label iterate:
+    body();
+    if cond() {
+        jump iterate;
+    }
 }
 
 func while(
@@ -125,18 +141,21 @@ func while(
     @parse(/ <block> /)
     body: () => (),
 ) {
-label iterate:
     if cond() {
-        body();
-        jump iterate;
+        repeat {
+            body();
+        } while cond();
     }
 }
 
 func for<T>(
-    @parse(/ "for" <expr> /)
+    @parse(/ "for" <decl> /)
+    iterVar: Decl<T>,
+    
+    @parse(/ "in" <expr> /)
     array: Array<T>,
 
-    @parse(/ "->" <var> <block> /)
+    @parse(/ <block> /)
     body: (e: T) => (),
 ) {
     let i = 0;
