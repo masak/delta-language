@@ -105,15 +105,12 @@ func if(
     elseBlock = parseDefault(quote { else {} }),
 ) {
     for let (cond, block) in condBlockPairs {
-        let b = cond();
-        jumptable b (
+        jumptable cond() (
             true => matched,
             false => nextIter,
         );
 label matched:
-        block();
-        return;
-        
+        return block();
 label nextIter:
     }
 
