@@ -97,8 +97,9 @@ These four end up being mutually recursive, although in a way that bottoms out o
 You can also spot from these definitions that `if` is all about conditionally jumping forwards, whereas `repeatWhile` is all about jumping backwards.
 
 ```
+@parse(/ "if" /)
 func if(
-    @parse(/ "if" <expr> <block> ["else" "if" <expr> <block>]* /)
+    @parse(/ <expr> <block> ["else" "if" <expr> <block>]* /)
     condBlockPairs: Array<(() => Bool, () => ())>,
 
     @parse(/ ["else" <block>]? /)
@@ -117,8 +118,9 @@ label nextIter:
     elseBlock();
 }
 
+@parse(/ "repeat" /)
 func repeatWhile(
-    @parse(/ "repeat" <block> /),
+    @parse(/ <block> /),
     body: () => (),
 
     @parse(/ "while" <expr> ";" /),
@@ -131,8 +133,9 @@ label iterate:
     }
 }
 
+@parse(/ "while" /)
 func while(
-    @parse(/ "while" <expr> /)
+    @parse(/ <expr> /)
     cond: () => Bool,
 
     @parse(/ <block> /)
@@ -145,8 +148,9 @@ func while(
     }
 }
 
+@parse(/ "for" /)
 func for<T>(
-    @parse(/ "for" <decl> /)
+    @parse(/ <decl> /)
     iterVar: Decl<T>,
     
     @parse(/ "in" <expr> /)
